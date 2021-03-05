@@ -1,0 +1,27 @@
+include:
+  - project: 'engineering/ci-templates'
+    file: '/gcp-k8s/pipeline-v2.yml'
+
+image: cleardata/bionic
+
+variables:
+  image_name: cleardata/real-time-enforcer
+
+test-source:
+  stage: test
+  image: python:3.8-slim
+  script:
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y git
+    - python3 -m pip install -r requirements.txt
+    - python3 -m pip install pytest
+    - python3 -m pytest -v
+
+build-image:
+  extends: .build-docker-image
+
+publish-image-nonprod:
+  extends: .publish-docker-image-nonprod
+
+publish-image-prod:
+  extends: .publish-docker-image-prod
